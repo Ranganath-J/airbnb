@@ -5,6 +5,11 @@ const homeSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  host: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   price: {
     type: Number,
     required: true,

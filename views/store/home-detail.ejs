@@ -39,6 +39,11 @@
                     <div class="mt-2">
                       <%- include('../partials/favourite', {home: home}) %>
                     </div>
+                    <% if (user && user.userType === 'guest') { %>
+                      <div class="mt-2">
+                        <a class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200" href="/reserve/<%= home._id %>">Book Now</a>
+                      </div>
+                    <% } %>
                   <% } %>
               </div>
           </div>

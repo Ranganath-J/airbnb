@@ -1,4 +1,5 @@
 const Home = require("../models/home");
+const Booking = require("../models/booking");
 const fs = require("fs");
 
 exports.getAddHome = (req, res, next) => {
@@ -10,6 +11,37 @@ exports.getAddHome = (req, res, next) => {
     isLoggedIn: req.isLoggedIn,
     user: req.session.user,
   });
+};
+
+exports.getHostBookings = async (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const bookings = await Booking.find()
+      .populate("home")
+      .populate("user")
+      .sort({ createdAt: -1 });
+
+    const hostBookings = bookings.filter((booking) => {
+      return (
+        booking.home &&
+        booking.home.host &&
+        booking.home.host.toString() === req.session.user._id.toString()
+      );
+    });
+
+    res.render("host/bookings", {
+      bookings: hostBookings,
+      pageTitle: "Guest Bookings",
+      currentPage: "host-bookings",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getEditHome = (req, res, next) => {
@@ -35,7 +67,7 @@ exports.getEditHome = (req, res, next) => {
 };
 
 exports.getHostHomes = (req, res, next) => {
-  Home.find().then((registeredHomes) => {
+  Home.find({ host: req.session.user._id }).then((registeredHomes) => {
     res.render("host/host-home-list", {
       registeredHomes: registeredHomes,
       pageTitle: "Host Homes List",
@@ -57,6 +89,7 @@ exports.postAddHome = async (req, res, next) => {
 
   const home = new Home({
     houseName,
+    host: req.session.user._id,
     price,
     location,
     rating,

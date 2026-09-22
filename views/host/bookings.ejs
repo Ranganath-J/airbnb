@@ -4,20 +4,21 @@
     <%- include('../partials/nav') %>
     <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
       <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
-        My Bookings
+        Guest Bookings
       </h2>
       <div class="flex flex-wrap justify-center gap-6">
         <% if (!bookings || bookings.length === 0) { %>
-          <p class="text-center text-gray-500 text-lg w-full">Bookings will appear here</p>
+          <p class="text-center text-gray-500 text-lg w-full">No bookings for your homes yet.</p>
         <% } else { %>
           <% bookings.forEach(booking => { %>
-            <% if (booking.home) { %>
+            <% if (booking.home && booking.user) { %>
               <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 w-full max-w-sm">
                 <img src="<%= booking.home.photo ? '/' + booking.home.photo.replace(/\\/g, '/') : '/images/placeholder.jpg' %>" alt="<%= booking.home.houseName %>" class="w-full h-48 object-cover">
                 <div class="p-4">
                   <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= booking.home.houseName %></h3>
                   <p class="text-gray-600 mb-2"><i class="fas fa-map-marker-alt mr-2"></i><%= booking.home.location %></p>
                   <div class="border-b pb-4 mb-4">
+                    <p class="text-gray-600 mb-2">Guest: <%= booking.user.firstName %> <%= booking.user.lastName %></p>
                     <p class="text-gray-600 mb-2">Check-in: <%= booking.checkIn.toLocaleDateString('en-IN') %></p>
                     <p class="text-gray-600 mb-2">Check-out: <%= booking.checkOut.toLocaleDateString('en-IN') %></p>
                     <p class="text-gray-600 mb-2">Guests: <%= booking.guests %></p>
@@ -25,14 +26,7 @@
                     <p class="text-lg font-bold text-red-500">Rs <%= booking.totalPrice %></p>
                   </div>
                   <div class="flex items-center justify-between mt-4">
-                    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200" href="/homes/<%= booking.home._id %>">Details</a>
-                    <% if (booking.status === 'booked') { %>
-                      <form action="/bookings/cancel/<%= booking._id %>" method="POST">
-                        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200" type="submit">Cancel</button>
-                      </form>
-                    <% } else { %>
-                      <span class="text-gray-600">Cancelled</span>
-                    <% } %>
+                    <span class="text-sm font-medium text-gray-700">Status: <%= booking.status %></span>
                   </div>
                 </div>
               </div>
